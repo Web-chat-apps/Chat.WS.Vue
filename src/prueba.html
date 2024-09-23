@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat con Vue y Flowbite</title>
+  <script src="https://unpkg.com/vue@3"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100">
+  
+  <div id="app" class="container mx-auto max-w-7xl p-4">
+    <h1 class="text-2xl font-semibold mb-4">Chat Rooms con Vue y Usuarios</h1>
+
+    <div class="flex gap-4">
+
+      <!-- Tabs para las salas de chat -->
+      <div class="w-3/4">
+        <div>
+          <ul class="flex flex-wrap -mb-px border-b border-gray-200">
+            <!-- Lista de tabs con Vue -->
+            <li v-for="(room, index) in Object.keys(rooms)" :key="room" class="mr-2">
+              <button 
+                @click="switchRoom(room)"
+                :class="['inline-block p-4 rounded-t-lg border-b-2', activeRoom === room ? 'border-blue-600 text-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300']">
+                {{ room }}
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contenido del chat -->
+        <div class="bg-white p-4 shadow-md rounded-lg mt-4">
+          <!-- Cabecera del chat -->
+          <div class="bg-blue-600 p-4 text-white rounded-t-lg">
+            <h2 class="text-xl font-semibold">Chat - {{ activeRoom }}</h2>
+          </div>
+
+          <!-- Mensajes -->
+          <div class="bg-gray-50 p-4 h-96 overflow-y-auto border-t border-gray-200">
+            <div v-for="(message, index) in rooms[activeRoom].messages" :key="index" 
+              :class="['mb-4', message.isCurrentUser ? 'text-right' : 'text-left']">
+              
+              <span :class="['text-sm', message.isCurrentUser ? 'text-blue-600' : 'text-gray-500', 'font-semibold']">
+                {{ message.sender }}:
+              </span>
+              <p :class="['p-2 rounded-lg inline-block', message.isCurrentUser ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black']">
+                {{ message.text }}
+              </p>
+              <span class="text-xs text-gray-500">{{ message.time }}</span>
+            </div>
+          </div>
+
+          <!-- Input para mensajes -->
+          <form @submit.prevent="handleMessageSend" class="bg-gray-100 p-4 border-t border-gray-300 rounded-b-lg">
+            <div class="flex">
+              <input v-model="newMessage" type="text" placeholder="Escribe un mensaje..." class="flex-grow border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring focus:border-blue-500">
+              <button type="submit" class="ml-2 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition">Enviar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lista de usuarios en la sala -->
+      <div class="w-1/4 bg-white shadow-md rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-4">Usuarios en la sala</h2>
+        <ul class="space-y-2">
+          <li v-for="(user, index) in rooms[activeRoom].users" :key="index" class="p-2 bg-gray-200 rounded-lg hover:bg-blue-100">
+            {{ user }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          // Datos de las salas
+          rooms: {
+            'Sala 1': {
+              messages: [],
+              users: ["Juan", "María", "Pedro"]
+            },
+            'Sala 2': {
+              messages: [],
+              users: ["Ana", "Carlos", "Lucía"]
+            },
+            'Sala 3': {
+              messages: [],
+              users: ["Tomás", "Andrea", "Felipe"]
+            }
+          },
+          currentUser: 'Tú',         // Usuario actual
+          activeRoom: 'Sala 1',      // Sala inicial
+          newMessage: ''             // Nuevo mensaje a enviar
+        };
+      },
+      methods: {
+        // Cambiar de sala
+        switchRoom(room) {
+          this.activeRoom = room;
+        },
+        // Enviar mensaje
+        handleMessageSend() {
+          if (this.newMessage.trim() !== '') {
+            const currentTime = new Date();
+            const time = `${currentTime.getHours()}:${currentTime.getMinutes()}`;
+            
+            // Agregar el mensaje al chat de la sala actual
+            this.rooms[this.activeRoom].messages.push({
+              sender: this.currentUser,
+              text: this.newMessage,
+              isCurrentUser: true,
+              time
+            });
+
+            // Simular respuesta automática
+            setTimeout(() => {
+              const randomUser = this.rooms[this.activeRoom].users[
+                Math.floor(Math.random() * this.rooms[this.activeRoom].users.length)
+              ];
+              this.rooms[this.activeRoom].messages.push({
+                sender: randomUser,
+                text: 'Este es un mensaje de ejemplo.',
+                isCurrentUser: false,
+                time
+              });
+            }, 1000);
+
+            // Limpiar el campo de mensaje
+            this.newMessage = '';
+          }
+        }
+      }
+    }).mount('#app');
+  </script>
+
+</body>
+</html>
