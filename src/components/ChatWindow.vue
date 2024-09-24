@@ -54,18 +54,13 @@ import { ref } from 'vue';
     activeRoom: string;
   }>();
   
-  const emit = defineEmits<{
-    (e: 'send-message', message: string): void;
-  }>();
+
   
   const newMessage = ref('');
   
   function sendMessage() {
     if (newMessage.value.trim() !== '') {
-      
-      
       wsSocket.emit('sendPublicChat', { message: newMessage.value, room_id: props.activeRoom });
-      //emit('send-message', newMessage.value);
       newMessage.value = '';
     }
   }

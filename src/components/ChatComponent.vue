@@ -21,8 +21,6 @@ import UserList from './UserList.vue';
 const myid = ref(wsSocket.id)
 const activeRoom = ref('lobby')
 const rooms = ref<Record<string, Room>>({'lobby': {messages:[], users:[]}} as Record<string,Room>) 
-//const rooms = ref<Record<string, Room>>({} as Record<string,Room>) 
-const newMessage = ref('')
 const initialized = ref(false)
 
 wsSocket.on('onMessage', (x:{user:{displayName:string, socket_id:string}, message: string, room_id: string})=>{
