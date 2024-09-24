@@ -18,9 +18,6 @@ import ChatTabs from './ChatTabs.vue';
 import ChatWindow from './ChatWindow.vue';
 import UserList from './UserList.vue';
 
-
-
-const messages = ref<Map<string,ChatMessageType[]>>(new Map())
 const myid = ref(wsSocket.id)
 const activeRoom = ref('lobby')
 const rooms = ref<Record<string, Room>>({'lobby': {messages:[], users:[]}} as Record<string,Room>) 
@@ -60,15 +57,25 @@ wsSocket.on('onJoinRoom', (x:{room_id: string, users: User[]})=>{
   if(!rooms.value[x.room_id]){
     rooms.value[x.room_id] = {messages:[], users:[]}
   }
+  else{
+    rooms.value[x.room_id].users = []
+  }
+  
   rooms.value[x.room_id].users.push(... x.users)
 })
 
 wsSocket.on('connect',()=>{
+  if(wsSocket.recovered){
+
+  }
+  else{
     myid.value =wsSocket.id
     
     wsSocket.emit('joinRoom', {room_id: activeRoom.value})
     wsSocket.emit('joinRoom', {room_id: 'prueba'})
     initialized.value = true
+  }
+    
 })
 function switchRoom(room: string) {
   activeRoom.value = room;
