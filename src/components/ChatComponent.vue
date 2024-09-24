@@ -65,16 +65,11 @@ wsSocket.on('onJoinRoom', (x:{room_id: string, users: User[]})=>{
 })
 
 wsSocket.on('connect',()=>{
-  if(wsSocket.recovered){
-
-  }
-  else{
-    myid.value =wsSocket.id
+  myid.value =wsSocket.id
     
     wsSocket.emit('joinRoom', {room_id: activeRoom.value})
     wsSocket.emit('joinRoom', {room_id: 'prueba'})
     initialized.value = true
-  }
     
 })
 function switchRoom(room: string) {
